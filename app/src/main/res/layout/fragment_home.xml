@@ -1,0 +1,965 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".HomeFragment">
+
+    <!-- Replace this TextView with your homepage ConstraintLayout -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Welcome Text -->
+        <TextView
+            android:id="@+id/welcome_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Welcome, Sourav"
+            android:textSize="25sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Featured Items Text -->
+        <TextView
+            android:id="@+id/featured_items_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Featured Items"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/welcome_text" />
+
+        <!-- HorizontalScrollView for Featured Items -->
+        <HorizontalScrollView
+            android:id="@+id/featured_items_horizantal_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/featured_items_text">
+
+            <!-- LinearLayout to contain the CardViews -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:id="@+id/item1_homepage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Featured Item 1"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Location Icon -->
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:src="@drawable/location_logo"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:text="Islamabad"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+
+                                <!-- Date -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="7th Mar"
+                                    android:layout_marginLeft="36dp"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Featured Item 2"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Location Icon -->
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:src="@drawable/location_logo"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:text="Islamabad"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+
+                                <!-- Date -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="7th Mar"
+                                    android:layout_marginLeft="36dp"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Featured Item 3"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Location Icon -->
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:src="@drawable/location_logo"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:text="Islamabad"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+
+                                <!-- Date -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="7th Mar"
+                                    android:layout_marginLeft="36dp"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Repeat the CardView section for more Featured Items as needed -->
+
+            </LinearLayout>
+        </HorizontalScrollView> <!--Featured items End-->
+
+        <!-- Your Items Text -->
+        <TextView
+            android:id="@+id/your_items_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Your Items"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/featured_items_horizantal_view" />
+
+        <!-- HorizontalScrollView for Your Items -->
+        <HorizontalScrollView
+            android:id="@+id/your_items_horizantal_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/your_items_text">
+
+            <!-- LinearLayout to contain the CardViews -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Your Item 1"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginRight="5dp"
+                                    android:src="@drawable/view"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginBottom="1dp"
+                                    android:text="395"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+
+                                <!-- Date -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="7th Mar"
+                                    android:layout_marginLeft="30dp"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Your Item 2"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginRight="5dp"
+                                    android:src="@drawable/view"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginBottom="1dp"
+                                    android:text="395"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+
+                                <!-- Date -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="7th Mar"
+                                    android:layout_marginLeft="30dp"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Your Item 1"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- View Icon -->
+                                <ImageView
+
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginRight="5dp"
+                                    android:src="@drawable/view"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginBottom="1dp"
+                                    android:text="395"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Repeat the CardView section for more Featured Items as needed -->
+
+            </LinearLayout>
+        </HorizontalScrollView> <!--Your items End-->
+
+        <!-- Recent Text -->
+        <TextView
+            android:id="@+id/recent_items_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="Recent Items"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/your_items_horizantal_view" />
+
+        <!-- HorizontalScrollView for Your Items -->
+        <HorizontalScrollView
+            android:id="@+id/recent_items_horizantal_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/recent_items_text">
+
+            <!-- LinearLayout to contain the CardViews -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Recent Item 1"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginRight="5dp"
+                                    android:src="@drawable/view"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginBottom="1dp"
+                                    android:text="395"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+
+                                <!-- Date -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="7th Mar"
+                                    android:layout_marginLeft="30dp"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Recent Item 2"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginRight="5dp"
+                                    android:src="@drawable/view"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginBottom="1dp"
+                                    android:text="395"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+
+                                <!-- Date -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="7th Mar"
+                                    android:layout_marginLeft="30dp"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!-- CardView for Featured Item 1 -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="200dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="5dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <!-- CardView Content for Featured Item 1 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <!-- Top Section: Full Image -->
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@drawable/background_grey"
+                            android:layout_marginTop="-10dp"/>
+
+                        <!-- Bottom Section: Item Name, Price, Location, and Date -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Item Name (in bold style) -->
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Recent Item 3"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/black"
+                                    android:layout_marginLeft="5dp"/>
+
+                                <!-- Price (in orange color) -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="$10/hr"
+                                    android:textSize="14sp"
+                                    android:textStyle="bold"
+                                    android:textColor="#FF9800" />
+                            </LinearLayout>
+
+                            <!-- Location -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- View Icon -->
+                                <ImageView
+
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginVertical="15dp"
+                                    android:layout_marginRight="5dp"
+                                    android:src="@drawable/view"
+                                    android:layout_marginTop="1dp"/>
+
+                                <!-- Location Text -->
+                                <TextView
+
+                                    android:layout_width="100dp"
+                                    android:layout_height="15dp"
+                                    android:layout_marginBottom="1dp"
+                                    android:text="395"
+                                    android:textSize="14sp"
+                                    android:textColor="@android:color/black" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Repeat the CardView section for more Featured Items as needed -->
+
+            </LinearLayout>
+        </HorizontalScrollView> <!--Your items End-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
