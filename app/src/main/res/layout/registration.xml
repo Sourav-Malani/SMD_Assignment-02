@@ -47,6 +47,7 @@
         app:boxCornerRadiusBottomStart="5dp">
 
         <EditText
+            android:id="@+id/User_Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text" />
@@ -75,6 +76,7 @@
         app:boxCornerRadiusBottomStart="5dp">
 
         <EditText
+            android:id="@+id/User_Email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress" />
@@ -103,6 +105,7 @@
         app:boxCornerRadiusBottomStart="5dp">
 
         <EditText
+            android:id="@+id/User_Contact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number" />
@@ -131,11 +134,16 @@
         app:boxBackgroundColor="#DFDFDF">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/filled_exposed_dropdown"
+            android:id="@+id/drp_Country"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:inputType="none"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+        />
 
     </com.google.android.material.textfield.TextInputLayout>
+
 
     <!-- City -->
     <TextView
@@ -159,15 +167,47 @@
         app:boxBackgroundColor="#DFDFDF">
 
         <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/filled_exposed_dropdown2"
+            android:id="@+id/drp_City"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Add the Forgot Password and Sign Up sections here if needed -->
+    <!-- Password -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Password"
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="385dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Enter Password"
+        app:boxCornerRadiusBottomEnd="5dp"
+        app:boxCornerRadiusBottomStart="5dp">
+
+        <EditText
+            android:id="@+id/User_Password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textVisiblePassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_signUp"
         android:layout_width="380dp"
         android:layout_height="60dp"
         android:layout_marginLeft="20dp"
@@ -177,8 +217,7 @@
         android:textSize="20dp"
         android:textAllCaps="false"
         app:cornerRadius="5dp"
-        android:clickable="true"
-        android:onClick="registration_SignUp_Clicked"/>
+        />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
