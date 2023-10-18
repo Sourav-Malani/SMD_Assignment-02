@@ -49,69 +49,67 @@ public class registration extends AppCompatActivity {
 
         btn_SignUp = findViewById(R.id.btn_signUp);
 
-
-
-            btn_SignUp.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(!UserEmail.getText().toString().isEmpty() && !UserPassword.getText().toString().isEmpty()){ //Email and password not Empty
-                        mAuth.createUserWithEmailAndPassword(UserEmail.getText().toString(),UserPassword.getText().toString())
-                                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if(task.isSuccessful()){
-                                            if (isFirstRegistration()) {
-                                                startActivity(new Intent(registration.this, EditProfile.class));
-                                            }
-                                            else{
-                                                startActivity(new Intent(registration.this, bottomnavigation.class));
-
-                                            }
-                                            Toast.makeText(
-                                                    registration.this,
-                                                    "SignUp Successfull",
-                                                    Toast.LENGTH_LONG).show();
-                                            Toast.makeText(
-                                                    registration.this,
-                                                    mAuth.getCurrentUser().getUid(),
-                                                    Toast.LENGTH_LONG).show();
+        btn_SignUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!UserEmail.getText().toString().isEmpty() && !UserPassword.getText().toString().isEmpty()){ //Email and password not Empty
+                    mAuth.createUserWithEmailAndPassword(UserEmail.getText().toString(),UserPassword.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if(task.isSuccessful()){
+                                        if (isFirstRegistration()) {
+                                            startActivity(new Intent(registration.this, EditProfile.class));
                                         }
-                                    }//omComplete
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        if (e instanceof FirebaseAuthUserCollisionException) {
-                                            Toast.makeText(
-                                                    registration.this,
-                                                    "Email address already in use",
-                                                    Toast.LENGTH_LONG
-                                            ).show();
-                                        } else if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                                            Toast.makeText(
-                                                    registration.this,
-                                                    "Invalid email or password format",
-                                                    Toast.LENGTH_LONG
-                                            ).show();
-                                        } else {
-                                            Toast.makeText(
-                                                    registration.this,
-                                                    "Failed SignUp: " + e.getMessage(),
-                                                    Toast.LENGTH_LONG
-                                            ).show();
+                                        else{
+                                            startActivity(new Intent(registration.this, bottomnavigation.class));
+
                                         }
+                                        Toast.makeText(
+                                                registration.this,
+                                                "SignUp Successfull",
+                                                Toast.LENGTH_LONG).show();
+                                        Toast.makeText(
+                                                registration.this,
+                                                mAuth.getCurrentUser().getUid(),
+                                                Toast.LENGTH_LONG).show();
                                     }
-                                });
-                    }//Else
-                    else{
-                        Toast.makeText(
-                                registration.this,
-                                "Email or Password is Empty",
-                                Toast.LENGTH_LONG
-                        ).show();
-                    }
+                                }//omComplete
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    if (e instanceof FirebaseAuthUserCollisionException) {
+                                        Toast.makeText(
+                                                registration.this,
+                                                "Email address already in use",
+                                                Toast.LENGTH_LONG
+                                        ).show();
+                                    } else if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                                        Toast.makeText(
+                                                registration.this,
+                                                "Invalid email or password format",
+                                                Toast.LENGTH_LONG
+                                        ).show();
+                                    } else {
+                                        Toast.makeText(
+                                                registration.this,
+                                                "Failed SignUp: " + e.getMessage(),
+                                                Toast.LENGTH_LONG
+                                        ).show();
+                                    }
+                                }
+                            });
+                }//Else
+                else{
+                    Toast.makeText(
+                            registration.this,
+                            "Email or Password is Empty",
+                            Toast.LENGTH_LONG
+                    ).show();
                 }
-            });
+            }
+        });
 
 
 
