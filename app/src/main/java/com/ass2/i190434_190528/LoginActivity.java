@@ -4,13 +4,20 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,25 +32,65 @@ public class LoginActivity extends AppCompatActivity {
     EditText loginUsername, loginPassword, loginEmail;
     Button loginButton;
     TextView signupRedirectText;
+    FirebaseAuth mAuth;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         loginEmail = findViewById(R.id.User_Email);
         loginPassword = findViewById(R.id.User_Password);
         signupRedirectText = findViewById(R.id.txt_signUp);
         loginButton = findViewById(R.id.btn_signIn);
+        mAuth = FirebaseAuth.getInstance(); // For Authentication
 
+        // Check if the user is already logged in
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            // User is already logged in, navigate to the home screen
+            startActivity(new Intent(LoginActivity.this, bottomnavigation.class));
+            finish(); // Close this activity
+        }
         loginButton.setOnClickListener(new View.OnClickListener() {
+
+
+            String email = loginEmail.getText().toString();
+            String password = loginPassword.getText().toString();
+
             @Override
             public void onClick(View view) {
-                if (!validateUsername() | !validatePassword()){
+                if (validateEmail() && validatePassword()){
+                    //Login using Firebase Authentication
+                    mAuth.signInWithEmailAndPassword(loginEmail.getText().toString(), loginPassword.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        if(checkUser()) {
+                                            setSharedPreference(); //Login successful, set shared preference
 
+                                            // After successful authentication, navigate to the next activity
+                                            Intent intent = new Intent(LoginActivity.this, bottomnavigation.class);
+                                            startActivity(intent);
+                                        }
+
+                                    } else {
+                                        Toast.makeText(
+                                                LoginActivity.this,
+                                                "Authentication failed.",
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+                                    }
+                                }
+                            });
                 } else {
-                    checkUser();
+                       Toast.makeText(
+                             LoginActivity.this,
+                             "Please enter valid credentials",
+                             Toast.LENGTH_SHORT
+                      ).show();
                 }
             }
         });
@@ -57,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public Boolean validateUsername(){
+    public Boolean validateEmail(){
         String val = loginEmail.getText().toString();
         if (val.isEmpty()){
             loginEmail.setError("Username or Email cannot be empty");
@@ -79,7 +126,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void checkUser(){
+    public boolean checkUser(){
+        final boolean[] userExists = {false};
         String userEmail = loginEmail.getText().toString().trim();
         String userPassword = loginPassword.getText().toString().trim();
 
@@ -100,6 +148,9 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d("HomeFragment", "Passwords "+passwordFromDB+" "+userPassword);
 
                     if (passwordFromDB.equals(userPassword)){
+                        userExists[0]  = true; // User exists
+
+
                         loginEmail.setError(null);
 
                         //Pass the data using intent
@@ -119,10 +170,10 @@ public class LoginActivity extends AppCompatActivity {
                         loginPassword.requestFocus();
                     }
                 } else {
-
                     loginEmail.setError("User does not exist");
                     loginEmail.requestFocus();
                 }
+
             }
 
             @Override
@@ -130,6 +181,14 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+        return userExists[0];
+    }
+    private void setSharedPreference() {
+        SharedPreferences sharedPrefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putBoolean("isLogged", true);
+        editor.apply(); // Commit changes
+
     }
 
 }
