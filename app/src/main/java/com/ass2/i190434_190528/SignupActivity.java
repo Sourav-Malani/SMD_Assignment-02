@@ -233,8 +233,5 @@ public class SignupActivity extends AppCompatActivity {
             return true;
         }
     }
-//    private boolean isFirstRegistration() {
-//        SharedPreferences sharedPrefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
-//        return !sharedPrefs.getBoolean("profileCompleted", false);
-//    }
+
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,30 +40,32 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mAuth = FirebaseAuth.getInstance(); // For Authentication
+
         loginEmail = findViewById(R.id.User_Email);
         loginPassword = findViewById(R.id.User_Password);
         signupRedirectText = findViewById(R.id.txt_signUp);
         loginButton = findViewById(R.id.btn_signIn);
-        mAuth = FirebaseAuth.getInstance(); // For Authentication
 
         // Check if the user is already logged in
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if (currentUser != null) {
             // User is already logged in, navigate to the home screen
             startActivity(new Intent(LoginActivity.this, bottomnavigation.class));
             finish(); // Close this activity
         }
+
         loginButton.setOnClickListener(new View.OnClickListener() {
-
-
-            String email = loginEmail.getText().toString();
-            String password = loginPassword.getText().toString();
 
             @Override
             public void onClick(View view) {
+                String email = loginEmail.getText().toString();
+                String password = loginPassword.getText().toString();
+
                 if (validateEmail() && validatePassword()){
                     //Login using Firebase Authentication
-                    mAuth.signInWithEmailAndPassword(loginEmail.getText().toString(), loginPassword.getText().toString())
+                    mAuth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -84,8 +87,19 @@ public class LoginActivity extends AppCompatActivity {
                                         ).show();
                                     }
                                 }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(
+                                                  LoginActivity.this,
+                                                  "Authentication failed.",
+                                                  Toast.LENGTH_SHORT
+                                        ).show();
+                                }
                             });
-                } else {
+                }
+                else {
                        Toast.makeText(
                              LoginActivity.this,
                              "Please enter valid credentials",
@@ -104,10 +118,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public Boolean validateEmail(){
+    private Boolean validateEmail(){
         String val = loginEmail.getText().toString();
         if (val.isEmpty()){
             loginEmail.setError("Username or Email cannot be empty");
+            Log.d("HomeFragment", "Email: "+loginEmail.getText().toString());
             return false;
         } else {
             loginEmail.setError(null);

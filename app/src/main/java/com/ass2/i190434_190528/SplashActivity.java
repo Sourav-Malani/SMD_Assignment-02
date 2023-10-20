@@ -1,6 +1,7 @@
 package com.ass2.i190434_190528;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,8 +18,18 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                    SharedPreferences sharedPrefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
+                    boolean isLogged = sharedPrefs.getBoolean("isLogged", false);
+
+                    Intent intent;
+                    if(isLogged){
+                        intent = new Intent(SplashActivity.this, bottomnavigation.class);
+                    }
+                    else{
+                        intent = new Intent(SplashActivity.this, LoginActivity.class);
+                    }
                     startActivity(intent);
+                    finish();
                 }
             }
         };
