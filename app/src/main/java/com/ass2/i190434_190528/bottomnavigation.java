@@ -2,6 +2,7 @@ package com.ass2.i190434_190528;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,13 +19,21 @@ public class bottomnavigation extends AppCompatActivity {
         binding = BottomNavigationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        replaceFragment(new HomeFragment());
+        Intent intent = getIntent();
+        String nameUser = intent.getStringExtra("name");
+        Log.d("HomeFragment", "nameUser " + nameUser);
+
+        HomeFragment homeFragment = HomeFragment.newInstance(nameUser);
+        replaceFragment(homeFragment);
         binding.bottomNavigationView.setBackground(null);
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.home) {
-                replaceFragment(new HomeFragment());
-            } else if (item.getItemId() == R.id.search) {
+                Log.d("HomeFragment", "nameUser " + nameUser);
+
+                replaceFragment(homeFragment);
+            }
+             else if (item.getItemId() == R.id.search) {
                 replaceFragment(new SearchFragment());
             } else if (item.getItemId() == R.id.chat) {
                 replaceFragment(new ChatFragment());

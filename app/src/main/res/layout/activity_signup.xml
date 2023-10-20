@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".SignupActivity">
+
+    <!--    Registration Text and Logo-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <ImageView
+            android:id="@+id/SpotItLogo"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:src="@drawable/logo"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            />
+
+        <!-- Registration -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Registration |"
+            android:textColor="@color/black"
+            android:textSize="35sp"
+            android:textStyle="bold"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+    <!-- Enter Name -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="385dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Enter name"
+        app:boxCornerRadiusBottomEnd="5dp"
+        app:boxCornerRadiusBottomStart="5dp">
+
+        <EditText
+            android:id="@+id/User_Name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--    Enter Email -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="385dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Enter email"
+        app:boxCornerRadiusBottomEnd="5dp"
+        app:boxCornerRadiusBottomStart="5dp">
+
+        <EditText
+            android:id="@+id/User_Email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--    Enter Username-->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="385dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Enter Username"
+        app:boxCornerRadiusBottomEnd="5dp"
+        app:boxCornerRadiusBottomStart="5dp">
+
+        <EditText
+            android:id="@+id/User_Username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--    Enter Contact Number -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="385dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Enter contact number"
+        app:boxCornerRadiusBottomEnd="5dp"
+        app:boxCornerRadiusBottomStart="5dp">
+
+        <EditText
+            android:id="@+id/User_Contact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--    Select Country -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="385dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:hint="Select Country"
+        app:boxBackgroundColor="#DFDFDF">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/drp_Country"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="none"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Select City -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="385dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:hint="Select City"
+        app:boxBackgroundColor="#DFDFDF">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/drp_City"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Enter Password -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="385dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        android:hint="Enter Password"
+        app:boxCornerRadiusBottomEnd="5dp"
+        app:boxCornerRadiusBottomStart="5dp">
+
+        <EditText
+            android:id="@+id/User_Password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textVisiblePassword" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Sign Up Button  -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_signUp"
+        android:layout_width="380dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#E88A00"
+        android:text="Sign Up"
+        android:textSize="20dp"
+        android:textAllCaps="false"
+        app:cornerRadius="5dp"
+        />
+
+    <!-- Login Text -->
+    <TextView
+        android:id="@+id/txt_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Login"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        android:clickable="true"
+        android:onClick="onLoginClicked"
+        />
+
+
+</LinearLayout>

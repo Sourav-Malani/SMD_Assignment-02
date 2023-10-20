@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.INTERNET"/>
 
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -15,70 +15,74 @@
         android:theme="@style/Base.Theme.I190434_190528"
         tools:targetApi="31">
         <activity
+            android:name=".SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".bottomnavigation"
-            android:exported="true">
-        </activity>
-        <!--  Main Activity  -->
-        <activity android:name=".MainActivity" android:exported="true" />
-
-        <!-- Other activities -->
-        <activity android:name=".registration" android:exported="true" />
-        <activity android:name=".homepage" android:exported="true" />
+            android:exported="true" /> <!-- Main Activity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" /> <!-- Other activities -->
+        <activity
+            android:name=".registration"
+            android:exported="true" />
+        <activity
+            android:name=".homepage"
+            android:exported="true" />
         <activity
             android:name=".fragment_chat_inside_one"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".EmailVerification"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".SearchFragment"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".Searched"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".FragmentAddItem"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".ProfileFragment"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".UploadImage"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".UploadVideo"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".RentItem"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".EditProfile"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".AudioCall"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".VideoCall"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
     </application>
+
 </manifest>
