@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.ass2.i190434_190528.Helper.HelperClass;
+import com.ass2.i190434_190528.Helper.UserDatabaseHelper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -21,7 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class HomeFragment extends Fragment {
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-    String UserName;
+    String nameFromDB;;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -29,8 +31,20 @@ public class HomeFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             String nameUser = args.getString("nameUser");
-            Log.d("HomeFragment", "Username HF:" + nameUser);
-            UserName = nameUser;
+            Log.d("HomeFragment", "nameFromDB; HF:" + nameUser);
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            UserDatabaseHelper userDatabaseHelper = new UserDatabaseHelper();
+            String userEmail = mAuth.getCurrentUser().getEmail().toString();
+            userDatabaseHelper.getUserData(userEmail, new UserDatabaseHelper.UserDataCallback() {
+                @Override
+                public void onUserDataReceived(HelperClass userData) {
+                    nameFromDB= userData.getName();
+                }
+                @Override
+                public void onUserDataError(String error) {
+                }
+            });
             // Now, you can use the nameUser in your HomeFragment
             // For example, you can set it to a TextView or use it as needed.
         }
@@ -44,13 +58,18 @@ public class HomeFragment extends Fragment {
 
         // Find the TextView
         TextView welcomeTextView = view.findViewById(R.id.welcome_text);
-        welcomeTextView.setText(UserName);
+        // Check if nameFromDB is null, and if so, show a placeholder or loading message
+        if (nameFromDB == null) {
+            welcomeTextView.setText("Loading...");
+        } else {
+            welcomeTextView.setText(nameFromDB);
+        }
         // Find the item1_homepage view
         View item1HomepageView = view.findViewById(R.id.item1_homepage);
 
          //Create a SpannableStringBuilder for the
 
-        SpannableStringBuilder spannableText = new SpannableStringBuilder("Welcome, "+UserName);
+        SpannableStringBuilder spannableText = new SpannableStringBuilder("Welcome, "+nameFromDB);
 
         // Set "Welcome" text color to black
         spannableText.setSpan(
@@ -86,5 +105,9 @@ public class HomeFragment extends Fragment {
         args.putString("nameUser", nameUser);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void setName(String nameFromDB) {
+        this.nameFromDB = nameFromDB;
     }
 }

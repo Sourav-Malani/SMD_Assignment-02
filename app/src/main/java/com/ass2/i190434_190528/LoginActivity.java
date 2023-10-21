@@ -26,21 +26,19 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Objects;
-
 public class LoginActivity extends AppCompatActivity {
 
-    EditText loginUsername, loginPassword, loginEmail;
-    Button loginButton;
-    TextView signupRedirectText;
-    FirebaseAuth mAuth;
-
+    private EditText loginEmail;
+    private EditText loginPassword;
+    private Button loginButton;
+    private TextView signupRedirectText;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mAuth = FirebaseAuth.getInstance(); // For Authentication
+        mAuth = FirebaseAuth.getInstance();
 
         loginEmail = findViewById(R.id.User_Email);
         loginPassword = findViewById(R.id.User_Password);
@@ -49,80 +47,58 @@ public class LoginActivity extends AppCompatActivity {
 
         // Check if the user is already logged in
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
         if (currentUser != null) {
-            // User is already logged in, navigate to the home screen
-            startActivity(new Intent(LoginActivity.this, bottomnavigation.class));
-            finish(); // Close this activity
+            navigateToHome();
+            finish();
         }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
-                String email = loginEmail.getText().toString();
-                String password = loginPassword.getText().toString();
-
-                if (validateEmail() && validatePassword()){
-                    //Login using Firebase Authentication
-                    mAuth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        FirebaseUser user = mAuth.getCurrentUser();
-                                        if(checkUser()) {
-                                            setSharedPreference(); //Login successful, set shared preference
-
-                                            // After successful authentication, navigate to the next activity
-                                            Intent intent = new Intent(LoginActivity.this, bottomnavigation.class);
-                                            startActivity(intent);
-                                        }
-
-                                    } else {
-                                        Toast.makeText(
-                                                LoginActivity.this,
-                                                "Authentication failed.",
-                                                Toast.LENGTH_SHORT
-                                        ).show();
-                                    }
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(
-                                                  LoginActivity.this,
-                                                  "Authentication failed.",
-                                                  Toast.LENGTH_SHORT
-                                        ).show();
-                                }
-                            });
-                }
-                else {
-                       Toast.makeText(
-                             LoginActivity.this,
-                             "Please enter valid credentials",
-                             Toast.LENGTH_SHORT
-                      ).show();
-                }
+                loginUser();
             }
         });
 
         signupRedirectText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
-                startActivity(intent);
+                navigateToSignup();
             }
         });
     }
 
-    private Boolean validateEmail(){
+    private void loginUser() {
+        String email = loginEmail.getText().toString();
+        String password = loginPassword.getText().toString();
+
+        if (validateEmail() && validatePassword()) {
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful() && checkUser()) {
+                                setSharedPreference();
+                                navigateToHome();
+                            } else {
+                                displayError("Authentication failed.");
+                            }
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            displayError("Authentication failed.");
+                        }
+                    });
+        } else {
+            displayError("Please enter valid credentials.");
+        }
+    }
+
+    private boolean validateEmail() {
         String val = loginEmail.getText().toString();
-        if (val.isEmpty()){
+        if (val.isEmpty()) {
             loginEmail.setError("Username or Email cannot be empty");
-            Log.d("HomeFragment", "Email: "+loginEmail.getText().toString());
             return false;
         } else {
             loginEmail.setError(null);
@@ -130,9 +106,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public Boolean validatePassword(){
+    private boolean validatePassword() {
         String val = loginPassword.getText().toString();
-        if (val.isEmpty()){
+        if (val.isEmpty()) {
             loginPassword.setError("Password cannot be empty");
             return false;
         } else {
@@ -141,69 +117,66 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public boolean checkUser(){
-        final boolean[] userExists = {false};
-        String userEmail = loginEmail.getText().toString().trim();
-        String userPassword = loginPassword.getText().toString().trim();
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        String safeUserEmail = userEmail.replace(".", "_").replace("@", "_");
+    private boolean checkUser() {
+        final String userEmail = loginEmail.getText().toString().trim();
+        final String userPassword = loginPassword.getText().toString().trim();
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+        final String safeUserEmail = userEmail.replace(".", "_").replace("@", "_");
 
         Query checkUserDatabase = reference.orderByChild("email").equalTo(userEmail);
-        Log.d("HomeFragment", "Emails "+safeUserEmail+" "+userEmail);
+        final boolean[] userExists = {false};
 
         checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String safeUserEmail = userEmail.replace(".", "_").replace("@", "_");
-
-                if (snapshot.exists()){
-                    loginEmail.setError(null);
+                if (snapshot.exists()) {
                     String passwordFromDB = snapshot.child(safeUserEmail).child("password").getValue(String.class);
-                    Log.d("HomeFragment", "Passwords "+passwordFromDB+" "+userPassword);
 
-                    if (passwordFromDB.equals(userPassword)){
-                        userExists[0]  = true; // User exists
-
-
-                        loginEmail.setError(null);
-
-                        //Pass the data using intent
-                        String nameFromDB = snapshot.child(safeUserEmail).child("name").getValue(String.class);
-                        String emailFromDB = snapshot.child(safeUserEmail).child("email").getValue(String.class);
-                        String usernameFromDB = snapshot.child(safeUserEmail).child("username").getValue(String.class);
-
-
-                        Intent intent = new Intent(LoginActivity.this, bottomnavigation.class);
-                        intent.putExtra("name", nameFromDB);
-                        Log.d("HomeFragment", "nameFromDB LA " + nameFromDB);
-
-                        startActivity(intent);
-
+                    if (passwordFromDB.equals(userPassword)) {
+                        userExists[0] = true;
                     } else {
                         loginPassword.setError("Invalid Credentials");
-                        loginPassword.requestFocus();
                     }
                 } else {
                     loginEmail.setError("User does not exist");
-                    loginEmail.requestFocus();
                 }
-
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Handle database error
             }
         });
+
         return userExists[0];
     }
     private void setSharedPreference() {
         SharedPreferences sharedPrefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPrefs.edit();
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userId = user.getUid();
         editor.putBoolean("isLogged", true);
-        editor.apply(); // Commit changes
-
+        editor.putString("userID", userId);
+        editor.apply();
     }
 
+    private void displayError(String message) {
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void navigateToHome() {
+        Intent intent = new Intent(LoginActivity.this, bottomnavigation.class);
+        startActivity(intent);
+    }
+
+    private void navigateToHomeWithUsername(String name) {
+        Intent intent = new Intent(LoginActivity.this, bottomnavigation.class);
+        intent.putExtra("name", name);
+        startActivity(intent);
+    }
+
+    private void navigateToSignup() {
+        Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+        startActivity(intent);
+    }
 }

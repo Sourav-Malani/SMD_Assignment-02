@@ -41,9 +41,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" /> <!-- Other activities -->
-        <activity
-            android:name=".registration"
-            android:exported="true" />
+
         <activity
             android:name=".homepage"
             android:exported="true" />
