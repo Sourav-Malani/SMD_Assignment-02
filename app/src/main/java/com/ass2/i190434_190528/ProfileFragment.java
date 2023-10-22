@@ -34,6 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import android.content.SharedPreferences;
 import android.widget.TextView;
@@ -47,9 +48,11 @@ public class ProfileFragment extends Fragment {
     TextView userName;
     FirebaseAuth mAuth;
     int COVER_PHOTO_REQUEST_CODE=100;
+    int PROFILE_PHOTO_REQUEST_CODE = 200;
     String url_ProfilePhoto,url_CoverPhoto;
     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
     String safeUserEmail,nameFromDB;
+    String name, city, country, email, phone, coverPhotoUrl, profilePhotoUrl;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,23 +66,39 @@ public class ProfileFragment extends Fragment {
         btn_editCoverPhoto = view.findViewById(R.id.btn_editCoverPhoto);
         btn_editProfilePhoto = view.findViewById(R.id.btn_editProfilePhoto);
         img_CoverPhoto = view.findViewById(R.id.img_CoverPhoto);
+        img_ProfilePhoto = view.findViewById(R.id.img_ProfileImage);
 
         userName = view.findViewById(R.id.txt_UserName);
         userName.setText("Daud");
 
+
         mAuth = FirebaseAuth.getInstance();
+
         //Check if instance is not null
         if (mAuth.getCurrentUser() != null) {
             //Get user email and replace all the "." and "@" with "_"
             String userEmail = mAuth.getCurrentUser().getEmail().toString();
             safeUserEmail = userEmail.replace(".", "_").replace("@", "_");
-            getandSetUserNameFromDB(mAuth);
+            retrieveUserData();
+            userName.setText(name);
+
+            //getandSetUserNameFromDB(mAuth);
         }
         else {
             Toast.makeText(getContext(), "User Instance null", Toast.LENGTH_LONG).show();
         }
         userName.setText(nameFromDB);
+        retrieveUserData();
 
+        // Use Picasso to load and display the cover photo URL
+        if (!coverPhotoUrl.isEmpty()) {
+            Picasso.get().load(coverPhotoUrl).into(img_CoverPhoto);
+        }
+
+        // Use Picasso to load and display the profile photo URL
+        if (!profilePhotoUrl.isEmpty()) {
+            Picasso.get().load(profilePhotoUrl).into(img_ProfilePhoto);
+        }
         btn_signOut = view.findViewById(R.id.btn_signOut);
 
         // Set an OnClickListener for the editProfileButton
@@ -99,6 +118,15 @@ public class ProfileFragment extends Fragment {
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(intent,COVER_PHOTO_REQUEST_CODE);
+            }
+        });
+        btn_editProfilePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(intent, PROFILE_PHOTO_REQUEST_CODE); // Define PROFILE_PHOTO_REQUEST_CODE
             }
         });
 
@@ -124,41 +152,73 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==COVER_PHOTO_REQUEST_CODE && resultCode==RESULT_OK)
-        {
-            Uri image= data.getData();
+        if (requestCode == COVER_PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+            Uri image = data.getData();
             img_CoverPhoto.setImageURI(image);
 
-            FirebaseStorage storage= FirebaseStorage.getInstance();
+            FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference reference = storage.getReference("users").child(safeUserEmail + "/CoverPhoto.png");
             reference.putFile(image)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Task<Uri> task=taskSnapshot.getStorage().getDownloadUrl();
+                            Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
                             task.addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     Toast.makeText(getContext(), "Cover Photo updated", Toast.LENGTH_LONG).show();
-                                    url_CoverPhoto=uri.toString();
-                                    //Add to the Firebase Realtime Database
-                                    updateCoverPhotoURLInDatabase(url_CoverPhoto);
+                                    url_CoverPhoto = uri.toString();
+                                    // Update the cover photo URL in SharedPreferences
+                                    coverPhotoUrl = url_CoverPhoto;
+                                    saveImageUrlsToSharedPreferences();
 
+                                    // Add to the Firebase Realtime Database
+                                    updateCoverPhotoURLInDatabase(url_CoverPhoto);
                                 }
                             });
-
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getContext(),e.getMessage().toString(),Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
                         }
                     });
+        }
+        if (requestCode == PROFILE_PHOTO_REQUEST_CODE && resultCode == RESULT_OK) {
+            Uri image = data.getData();
+            img_ProfilePhoto.setImageURI(image); // Update the profile photo ImageView
 
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference reference = storage.getReference("users").child(safeUserEmail + "/ProfilePhoto.png");
+            reference.putFile(image)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            Task<Uri> task = taskSnapshot.getStorage().getDownloadUrl();
+                            task.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    Toast.makeText(getContext(), "Profile Photo updated", Toast.LENGTH_LONG).show();
+                                    url_ProfilePhoto = uri.toString();
+                                    // Update the profile photo URL in SharedPreferences
+                                    profilePhotoUrl = url_ProfilePhoto;
+                                    saveImageUrlsToSharedPreferences();
+
+                                    // Add to the Firebase Realtime Database
+                                    updateProfilePhotoURLInDatabase(url_ProfilePhoto);
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getContext(), e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        }
+                    });
         }
     }
-
     public void EditProfileClicked(View view) {
 
     }
@@ -178,6 +238,22 @@ public class ProfileFragment extends Fragment {
         reference.child(uniqueUserId).child("coverPhotoUrl").setValue(coverPhotoUrl);
 
     }
+    private void updateProfilePhotoURLInDatabase(String URL) {
+        //Add Url to the Firebase Realtime Database.
+        mAuth = FirebaseAuth.getInstance();
+        String userEmail = mAuth.getCurrentUser().getEmail().toString();
+
+        safeUserEmail = userEmail.replace(".", "_").replace("@", "_");
+
+        String uniqueUserId = safeUserEmail; // Adjust this based on your user identifier
+
+        // After successfully obtaining the profile photo URL
+        String profilePhotoUrl = URL; // The profile photo URL
+
+        // Update the user's data in the Realtime Database. (creates a new field for profile PhotoUrl)
+        reference.child(uniqueUserId).child("profilePhotoUrl").setValue(profilePhotoUrl);
+    }
+
     private String getandSetUserNameFromDB(FirebaseAuth mAuth){
         //FirebaseAuth mAuth = FirebaseAuth.getInstance();
         UserDatabaseHelper userDatabaseHelper = new UserDatabaseHelper();
@@ -196,4 +272,25 @@ public class ProfileFragment extends Fragment {
 
     }
 
+    private void retrieveUserData() {
+        SharedPreferences sharedPrefs = requireActivity().getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
+
+        // Retrieve the data you stored
+        name = sharedPrefs.getString("name", "");
+        city = sharedPrefs.getString("city", "");
+        country = sharedPrefs.getString("country", "");
+        email = sharedPrefs.getString("email", "");
+        phone = sharedPrefs.getString("phone", "");
+        coverPhotoUrl = sharedPrefs.getString("coverPhotoUrl", "");
+        profilePhotoUrl = sharedPrefs.getString("profilePhotoUrl", "");
+    }
+
+    // Function to save image URLs to SharedPreferences
+    private void saveImageUrlsToSharedPreferences() {
+        SharedPreferences sharedPrefs = requireActivity().getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putString("coverPhotoUrl", coverPhotoUrl);
+        editor.putString("profilePhotoUrl", profilePhotoUrl);
+        editor.apply();
+    }
 }
