@@ -209,8 +209,13 @@ public class LoginActivity extends AppCompatActivity {
         editor.apply();
     }
 
+    private String errorMessage;
     private void displayError(String message) {
+        // Display a Toast (in your actual app)
         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+
+        // Store the error message for testing purposes
+        errorMessage = message;
     }
 
     private void navigateToHome() {
