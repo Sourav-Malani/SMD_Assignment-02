@@ -19,9 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
-    String email;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,37 +32,34 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    //Check if user is loggedIn Already.
+                    // Check if the user is logged in already.
                     SharedPreferences sharedPrefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
-                    final boolean[] isLogged = {sharedPrefs.getBoolean("isLogged", false)};
-                    String userID = sharedPrefs.getString("userID", "");
-
-
-
-
-
-
+                    boolean isLogged = sharedPrefs.getBoolean("isLogged", false);
 
                     Intent intent = null;
-                    if(isLogged[0]){
-                        //get email from db using sharedPrefs.
+                    if (isLogged) { // If the user is logged in already.
+                        final String[] userEmail = {""}; // Final variable to store email
+
                         UserDatabaseHelper userDatabaseHelper = new UserDatabaseHelper();
-                        String userEmail = mAuth.getCurrentUser().getEmail().toString();
-                        userDatabaseHelper.getUserData(userEmail, new UserDatabaseHelper.UserDataCallback() {
+                        userDatabaseHelper.getUserData(mAuth.getCurrentUser().getEmail(), new UserDatabaseHelper.UserDataCallback() {
                             @Override
                             public void onUserDataReceived(HelperClass userData) {
-                                email= userData.getEmail();
+                                userEmail[0] = userData.getEmail();
                             }
+
                             @Override
                             public void onUserDataError(String error) {
+                                // Handle error if necessary
                             }
                         });
-                        intent.putExtra("userEmail", email);
+
+                        // Start the new activity inside this callback
                         intent = new Intent(SplashActivity.this, bottomnavigation.class);
-                    }
-                    else{
+                        intent.putExtra("userEmail", userEmail[0]);
+                    } else { // If the user is not logged in.
                         intent = new Intent(SplashActivity.this, LoginActivity.class);
                     }
+
                     startActivity(intent);
                     finish();
                 }
@@ -72,6 +67,4 @@ public class SplashActivity extends AppCompatActivity {
         };
         thread.start();
     }
-
-
 }

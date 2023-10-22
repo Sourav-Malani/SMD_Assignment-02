@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView signupRedirectText;
     private FirebaseAuth mAuth;
+    String passwordFromDB, nameFromDB, cityFromDB, countryFromDB, emailFromDB, phoneFromDB, coverphotoURLFromDB, profilephotoURLFromDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,20 +65,20 @@ public class LoginActivity extends AppCompatActivity {
                 navigateToSignup();
             }
         });
+
     }
 
     private void loginUser() {
-        String email = loginEmail.getText().toString();
-        String password = loginPassword.getText().toString();
+        final String email = loginEmail.getText().toString();
+        final String password = loginPassword.getText().toString();
 
         if (validateEmail() && validatePassword()) {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful() && checkUser()) {
-                                setSharedPreference();
-                                navigateToHome();
+                            if (task.isSuccessful()) {
+                                checkUser(email, password);
                             } else {
                                 displayError("Authentication failed.");
                             }
@@ -117,39 +117,81 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean checkUser() {
-        final String userEmail = loginEmail.getText().toString().trim();
-        final String userPassword = loginPassword.getText().toString().trim();
+    private void checkUser(final String email, final String password) {
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        final String safeUserEmail = userEmail.replace(".", "_").replace("@", "_");
+        final String safeUserEmail = emailToSafeKey(email);
 
-        Query checkUserDatabase = reference.orderByChild("email").equalTo(userEmail);
-        final boolean[] userExists = {false};
+        Query checkUserDatabase = reference.orderByChild("email").equalTo(email);
 
         checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    String passwordFromDB = snapshot.child(safeUserEmail).child("password").getValue(String.class);
-
-                    if (passwordFromDB.equals(userPassword)) {
-                        userExists[0] = true;
+                    passwordFromDB = snapshot.child(safeUserEmail).child("password").getValue(String.class);
+                    if (passwordFromDB.equals(password)) {
+                        // Data retrieval and shared preference updates
+                        getDataFromDBAndSetPreferences();
                     } else {
-                        loginPassword.setError("Invalid Credentials");
+                        displayError("Invalid Credentials");
                     }
                 } else {
-                    loginEmail.setError("User does not exist");
+                    displayError("User does not exist");
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Handle database error
+                displayError("Database error");
             }
         });
-
-        return userExists[0];
     }
+
+    private void getDataFromDBAndSetPreferences() {
+        getDataFromDB(new DataCallback() {
+            @Override
+            public void onDataReceived() {
+                setSharedPreference();
+                navigateToHome();
+            }
+        });
+    }
+
+    private interface DataCallback {
+        void onDataReceived();
+    }
+
+    private void getDataFromDB(final DataCallback callback) {
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+        final String safeUserEmail = emailToSafeKey(loginEmail.getText().toString());
+
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    DataSnapshot userSnapshot = snapshot.child(safeUserEmail);
+                    nameFromDB = userSnapshot.child("name").getValue(String.class);
+                    cityFromDB = userSnapshot.child("city").getValue(String.class);
+                    countryFromDB = userSnapshot.child("country").getValue(String.class);
+                    emailFromDB = userSnapshot.child("email").getValue(String.class);
+                    phoneFromDB = userSnapshot.child("phone").getValue(String.class);
+                    coverphotoURLFromDB = userSnapshot.child("coverPhotoUrl").getValue(String.class);
+                    profilephotoURLFromDB = userSnapshot.child("profilePhotoUrl").getValue(String.class);
+                }
+
+                callback.onDataReceived();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                displayError("Database error");
+            }
+        });
+    }
+
+    private String emailToSafeKey(String email) {
+        return email.replace(".", "_").replace("@", "_");
+    }
+
     private void setSharedPreference() {
         SharedPreferences sharedPrefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPrefs.edit();
@@ -157,6 +199,13 @@ public class LoginActivity extends AppCompatActivity {
         String userId = user.getUid();
         editor.putBoolean("isLogged", true);
         editor.putString("userID", userId);
+        editor.putString("name", nameFromDB);
+        editor.putString("city", cityFromDB);
+        editor.putString("country", countryFromDB);
+        editor.putString("email", emailFromDB);
+        editor.putString("phone", phoneFromDB);
+        editor.putString("coverPhotoUrl", coverphotoURLFromDB);
+        editor.putString("profilePhotoUrl", profilephotoURLFromDB);
         editor.apply();
     }
 
@@ -167,12 +216,7 @@ public class LoginActivity extends AppCompatActivity {
     private void navigateToHome() {
         Intent intent = new Intent(LoginActivity.this, bottomnavigation.class);
         startActivity(intent);
-    }
-
-    private void navigateToHomeWithUsername(String name) {
-        Intent intent = new Intent(LoginActivity.this, bottomnavigation.class);
-        intent.putExtra("name", name);
-        startActivity(intent);
+        finish();
     }
 
     private void navigateToSignup() {

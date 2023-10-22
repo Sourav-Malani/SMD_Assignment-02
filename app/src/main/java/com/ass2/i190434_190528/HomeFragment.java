@@ -1,6 +1,8 @@
 package com.ass2.i190434_190528;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.SpannableStringBuilder;
@@ -21,30 +23,31 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class HomeFragment extends Fragment {
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-    String nameFromDB;;
+    //FirebaseDatabase database = FirebaseDatabase.getInstance();
+    //DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+    //String nameFromDB;
+    String name, city, country, email, phone, coverPhotoUrl, profilePhotoUrl;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-
+        retrieveUserData(); // name, city, country, email, phone, coverPhotoUrl, profilePhotoUrl
         Bundle args = getArguments();
         if (args != null) {
             String nameUser = args.getString("nameUser");
             Log.d("HomeFragment", "nameFromDB; HF:" + nameUser);
 
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            UserDatabaseHelper userDatabaseHelper = new UserDatabaseHelper();
-            String userEmail = mAuth.getCurrentUser().getEmail().toString();
-            userDatabaseHelper.getUserData(userEmail, new UserDatabaseHelper.UserDataCallback() {
-                @Override
-                public void onUserDataReceived(HelperClass userData) {
-                    nameFromDB= userData.getName();
-                }
-                @Override
-                public void onUserDataError(String error) {
-                }
-            });
+//            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+//            UserDatabaseHelper userDatabaseHelper = new UserDatabaseHelper();
+//            String userEmail = mAuth.getCurrentUser().getEmail().toString();
+//            userDatabaseHelper.getUserData(userEmail, new UserDatabaseHelper.UserDataCallback() {
+//                @Override
+//                public void onUserDataReceived(HelperClass userData) {
+//                    nameFromDB= userData.getName();
+//                }
+//                @Override
+//                public void onUserDataError(String error) {
+//                }
+//            });
             // Now, you can use the nameUser in your HomeFragment
             // For example, you can set it to a TextView or use it as needed.
         }
@@ -59,17 +62,17 @@ public class HomeFragment extends Fragment {
         // Find the TextView
         TextView welcomeTextView = view.findViewById(R.id.welcome_text);
         // Check if nameFromDB is null, and if so, show a placeholder or loading message
-        if (nameFromDB == null) {
+        if (name == null) {
             welcomeTextView.setText("Loading...");
         } else {
-            welcomeTextView.setText(nameFromDB);
+            welcomeTextView.setText(name);
         }
         // Find the item1_homepage view
         View item1HomepageView = view.findViewById(R.id.item1_homepage);
 
          //Create a SpannableStringBuilder for the
 
-        SpannableStringBuilder spannableText = new SpannableStringBuilder("Welcome, "+nameFromDB);
+        SpannableStringBuilder spannableText = new SpannableStringBuilder("Welcome, "+name);
 
         // Set "Welcome" text color to black
         spannableText.setSpan(
@@ -107,7 +110,19 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-    public void setName(String nameFromDB) {
-        this.nameFromDB = nameFromDB;
+    public void setName(String name) {
+        this.name = name;
+    }
+    private void retrieveUserData() {
+        SharedPreferences sharedPrefs = requireActivity().getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
+
+        // Retrieve the data you stored
+        name = sharedPrefs.getString("name", "");
+        city = sharedPrefs.getString("city", "");
+        country = sharedPrefs.getString("country", "");
+        email = sharedPrefs.getString("email", "");
+        phone = sharedPrefs.getString("phone", "");
+        coverPhotoUrl = sharedPrefs.getString("coverPhotoUrl", "");
+        profilePhotoUrl = sharedPrefs.getString("profilePhotoUrl", "");
     }
 }

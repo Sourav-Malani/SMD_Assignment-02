@@ -78,7 +78,6 @@ public class SignupActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             //Add to the database here.
-                            //For database
                             database = FirebaseDatabase.getInstance();
                             reference = database.getReference("users");
 

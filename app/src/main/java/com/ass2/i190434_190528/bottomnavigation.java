@@ -1,7 +1,9 @@
 
 package com.ass2.i190434_190528;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,48 +24,50 @@ import com.google.firebase.auth.FirebaseUser;
 public class bottomnavigation extends AppCompatActivity {
     BottomNavigationBinding binding;
     //private UserDataManager userDataManager;
-    String nameFromDB;
+    //String nameFromDB;
+    String name, city, country, email, phone, coverPhotoUrl, profilePhotoUrl;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private boolean dataLoaded = false; // Flag to track if user data has been loaded
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = BottomNavigationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        HomeFragment fragment = HomeFragment.newInstance(nameFromDB);
+        //Get User's data from shared preferences. (Stored this data locally during login).
+        retrieveUserData(); // name, city, country, email, phone, coverPhotoUrl, profilePhotoUrl
 
-        // Get User's name from DB.
-        UserDatabaseHelper userDatabaseHelper = new UserDatabaseHelper();
-        String userEmail = mAuth.getCurrentUser().getEmail().toString();
-        userDatabaseHelper.getUserData(userEmail, new UserDatabaseHelper.UserDataCallback() {
-            @Override
-            public void onUserDataReceived(HelperClass userData) {
-                nameFromDB = userData.getName();
+        HomeFragment fragment = HomeFragment.newInstance(name);
+        fragment.setName(name); // Assuming you have a method to set the name in HomeFragment
 
-                // Once you have the nameFromDB, you can set up your HomeFragment here.
-                fragment.setName(nameFromDB); // Assuming you have a method to set the name in HomeFragment
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frame_layout, fragment)
+                .commit();
 
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.frame_layout, fragment)
-                        .commit();
-
-                Log.d("HomeFragment", "Bottom: nameFromDB " + nameFromDB);
-            }
-
-            @Override
-            public void onUserDataError(String error) {
-                // Handle error here.
-            }
-        });
+//        // Get User's name from DB.
+//        UserDatabaseHelper userDatabaseHelper = new UserDatabaseHelper();
+//        String userEmail = mAuth.getCurrentUser().getEmail().toString();
+//        userDatabaseHelper.getUserData(userEmail, new UserDatabaseHelper.UserDataCallback() {
+//            @Override
+//            public void onUserDataReceived(HelperClass userData) {
+//                nameFromDB = userData.getName();
+//
+//                // Once you have the nameFromDB, you can set up your HomeFragment here.
+//
+//                Log.d("HomeFragment", "Bottom: nameFromDB " + nameFromDB);
+//            }
+//
+//            @Override
+//            public void onUserDataError(String error) {
+//                // Handle error here.
+//            }
+//        });
 
         binding.bottomNavigationView.setBackground(null);
-
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.home) {
                 // You can access nameFromDB here after it's been set in the callback.
-                Log.d("HomeFragment", "Bottom: nameFromDB " + nameFromDB);
+                Log.d("HomeFragment", "Bottom: nameFromDB " + name);
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.frame_layout, fragment)
@@ -89,13 +93,25 @@ public class bottomnavigation extends AppCompatActivity {
         Intent intent = new Intent(this, FragmentAddItem.class);
         startActivity(intent);
     }
-    private void updateUI() {
-        if (dataLoaded) {
-            HomeFragment fragment = HomeFragment.newInstance(nameFromDB);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frame_layout, fragment)
-                    .commit();
-        }
+//    private void updateUI() {
+//        if (dataLoaded) {
+//            HomeFragment fragment = HomeFragment.newInstance(name);
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.frame_layout, fragment)
+//                    .commit();
+//        }
+//    }
+    private void retrieveUserData() {
+        SharedPreferences sharedPrefs = getSharedPreferences("userPrefs", Context.MODE_PRIVATE);
+        //check if data is there.
+        // Retrieve the data you stored
+        name = sharedPrefs.getString("name", "");
+        city = sharedPrefs.getString("city", "");
+        country = sharedPrefs.getString("country", "");
+        email = sharedPrefs.getString("email", "");
+        phone = sharedPrefs.getString("phone", "");
+        coverPhotoUrl = sharedPrefs.getString("coverPhotoUrl", "");
+        profilePhotoUrl = sharedPrefs.getString("profilePhotoUrl", "");
     }
 }
