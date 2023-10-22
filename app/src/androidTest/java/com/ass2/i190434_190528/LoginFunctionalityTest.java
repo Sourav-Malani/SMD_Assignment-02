@@ -13,6 +13,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
 
 import com.ass2.i190434_190528.LoginActivity;
 import org.junit.Before;
@@ -40,24 +41,29 @@ public class LoginFunctionalityTest {
     }
 
 
-
     @Test
     public void testFailedLogin() {
+        // Define invalid email and password
+        String invalidEmail = "invalid@example.com";
+        String invalidPassword = "invalidPassword";
+
         // Enter invalid email and password, and click the login button
         Espresso.onView(ViewMatchers.withId(R.id.User_Email))
                 .perform(ViewActions.typeText(invalidEmail));
 
         Espresso.onView(ViewMatchers.withId(R.id.User_Password))
                 .perform(ViewActions.typeText(invalidPassword));
-        //close soft keyboard
+
+        // Close the soft keyboard
         Espresso.closeSoftKeyboard();
 
         Espresso.onView(ViewMatchers.withId(R.id.btn_signIn))
                 .perform(ViewActions.click());
 
-        String errorMessage = mActivityRule.getActivity().getErrorMessage();
-
-         assertEquals("Authentication failed.", errorMessage);    }
+        // Check if an error message is displayed (e.g., "Authentication failed.")
+        Espresso.onView(ViewMatchers.withText("Authentication failed."))
+                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
+    }
 
     @Test
     public void testEmptyFields() {
