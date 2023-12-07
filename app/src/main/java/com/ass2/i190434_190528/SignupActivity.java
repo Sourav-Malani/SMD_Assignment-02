@@ -1,15 +1,15 @@
 package com.ass2.i190434_190528;
 
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -17,25 +17,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ass2.i190434_190528.Helper.HelperClass;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.ass2.i190434_190528.config.Config;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignupActivity extends AppCompatActivity {
 
     EditText signupName, signupEmail, signupUsername, signupPassword, signupCountry, signupCity, signupPhone;
     TextView loginRedirectText;
     Button signupButton;
-    FirebaseDatabase database;
-    DatabaseReference reference;
-    FirebaseAuth mAuth;
 
     private String[] countryNames = {"Pakistan", "USA"};
     private String[] pakistanCities = {"Lahore", "Karachi", "Islamabad"};
@@ -48,189 +47,206 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        // Initialize your views here
+        initializeViews();
+
+        // Setup listeners
+        setupListeners();
+
+        final Handler handler = new Handler();
+        final Runnable checkConnection = new Runnable() {
+            @Override
+            public void run() {
+                checkInternetConnection();
+                handler.postDelayed(this, 2000); // Check every 2 seconds
+            }
+        };
+        handler.post(checkConnection);
+    }
+
+    private void initializeViews() {
         signupName = findViewById(R.id.User_Name);
         signupEmail = findViewById(R.id.User_Email);
         signupUsername = findViewById(R.id.User_Username);
         signupPassword = findViewById(R.id.User_Password);
-        signupButton = findViewById(R.id.btn_signUp);
         signupCountry = findViewById(R.id.drp_Country);
         signupCity = findViewById(R.id.drp_City);
         signupPhone = findViewById(R.id.User_Contact);
-
+        signupButton = findViewById(R.id.btn_signUp);
         loginRedirectText = findViewById(R.id.txt_login);
-        //For Authentication
-        mAuth = FirebaseAuth.getInstance();
 
-        signupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String name = signupName.getText().toString();
-                String email = signupEmail.getText().toString();
-                String username = signupUsername.getText().toString();
-                String password = signupPassword.getText().toString();
-                String country = signupCountry.getText().toString();
-                String city = signupCity.getText().toString();
-                String phone = signupPhone.getText().toString();
-                if(!email.isEmpty() && !password.isEmpty() && !name.isEmpty() && !username.isEmpty() && !country.isEmpty() && !city.isEmpty() && !phone.isEmpty() ){
-                mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            //Add to the database here.
-                            database = FirebaseDatabase.getInstance();
-                            reference = database.getReference("users");
+        // Initialize the country and city dropdowns
+        initializeDropdowns();
+    }
 
-                            HelperClass helperClass = new HelperClass(name, email, username, password, country, city, phone);
-
-                            // This will create a new child in the database with the username as the key
-                            String safeUserEmail = email.replace(".", "_").replace("@", "_");
-                            reference.child(safeUserEmail).setValue(helperClass); // This will create a new child in the database with the Email as the key
-
-
-
-                            Toast.makeText(SignupActivity.this, "You have signup successfully!", Toast.LENGTH_LONG).show();
-
-                            //TODO: Check if User is already logged in or not
-
-                            Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                            startActivity(intent);
-//                            if(isFirstRegistration()){
-//                                startActivity(new Intent(SignupActivity.this, EditProfile.class));
-//                            }
-//                            else{
-//                                startActivity(new Intent(SignupActivity.this, bottomnavigation.class));
-//                            }
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        if (e instanceof FirebaseAuthUserCollisionException) {
-                            if((((FirebaseAuthUserCollisionException) e).getErrorCode().equals("ERROR_EMAIL_ALREADY_IN_USE")))
-                            {
-                                signupEmail.setError("Email address already in use");
-                                signupEmail.requestFocus();
-                            }
-                        } else if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                            if (((FirebaseAuthInvalidCredentialsException) e).getErrorCode().equals("ERROR_WRONG_PASSWORD"))
-                            {
-                                signupPassword.setError("Invalid password");
-                                signupPassword.requestFocus();
-                            }
-                            if (((FirebaseAuthInvalidCredentialsException) e).getErrorCode().equals("ERROR_INVALID_EMAIL")) {
-                                signupEmail.setError("incorrect email format");
-                                signupEmail.requestFocus();
-
-                            }
-//                            Toast.makeText(
-//                                    SignupActivity.this,
-//                                    "Invalid email or password format",
-//                                    Toast.LENGTH_LONG
-//                            ).show();
-                        } else {
-                            Toast.makeText(
-                                    SignupActivity.this,
-                                    "Failed SignUp: " + e.getMessage(),
-                                    Toast.LENGTH_LONG
-                            ).show();
-                        }
-                    }
-                });
-            }
-            else{
-                    if(name.isEmpty()){
-                        signupName.setError("Name cannot be empty");
-                       // signupName.requestFocus();
-                    }
-                    if(email.isEmpty()){
-                        signupEmail.setError("Email cannot be empty");
-                        //signupEmail.requestFocus();
-                    }
-                    if(username.isEmpty()){
-                        signupUsername.setError("Username cannot be empty");
-                        //signupUsername.requestFocus();
-                    }
-                    if(password.isEmpty()){
-                        signupPassword.setError("Password cannot be empty");
-                        //signupPassword.requestFocus();
-                    }
-                    if(country.isEmpty()){
-                        signupCountry.setError("Country cannot be empty");
-                        //signupCountry.requestFocus();
-                    }
-                    if(city.isEmpty()){
-                        signupCity.setError("City cannot be empty");
-                        //signupCity.requestFocus();
-                    }
-                    if(phone.isEmpty()){
-                        signupPhone.setError("Phone cannot be empty");
-                        //signupPhone.requestFocus();
-                    }
-                }
-            }
-        });
-
-
-
-
-
-
-        // Initialize the country dropdown
+    private void initializeDropdowns() {
         AutoCompleteTextView countryAutoCompleteTextView = findViewById(R.id.drp_Country);
         ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, countryNames);
         countryAutoCompleteTextView.setAdapter(countryAdapter);
 
-        // Initialize the city dropdown
         cityAutoCompleteTextView = findViewById(R.id.drp_City);
         cityAutoCompleteTextView.setHint("Select City");
 
-        // Set up an item selection listener for the country dropdown
-        countryAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedCountry = parent.getItemAtPosition(position).toString();
-
-                // Update the city dropdown based on the selected country
-                if (selectedCountry.equals("Pakistan")) {
-                    ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(SignupActivity.this, android.R.layout.simple_list_item_1, pakistanCities);
-                    cityAutoCompleteTextView.setAdapter(cityAdapter);
-                    // If user changes the country then clear the city dropdown
-                    cityAutoCompleteTextView.setText(""); // Clear any previously selected city
-                    cityAutoCompleteTextView.setHint("Select City"); // Set the hint text
-
-                } else if (selectedCountry.equals("USA")) {
-                    ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(SignupActivity.this, android.R.layout.simple_list_item_1, usaCities);
-                    cityAutoCompleteTextView.setAdapter(cityAdapter);
-                    // If a country other than Pakistan or USA is selected, clear the city dropdown
-                    cityAutoCompleteTextView.setText(""); // Clear any previously selected city
-                    cityAutoCompleteTextView.setHint("Select City"); // Set the hint text
-
-                }
+        countryAutoCompleteTextView = findViewById(R.id.drp_Country);
+        countryAutoCompleteTextView.setOnItemClickListener((parent, view, position, id) -> {
+            String country = countryNames[position];
+            if (country.equals("Pakistan")) {
+                ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pakistanCities);
+                cityAutoCompleteTextView.setAdapter(cityAdapter);
+            } else if (country.equals("USA")) {
+                ArrayAdapter<String> cityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, usaCities);
+                cityAutoCompleteTextView.setAdapter(cityAdapter);
             }
         });
+    }
 
+    private void setupListeners() {
+        signupButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptSignup();
+            }
+        });
 
         loginRedirectText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
-                startActivity(intent);
+                navigateToLogin();
             }
         });
-
     }
-    public Boolean validateEmail(){
-        String val = signupEmail.getText().toString();
-        if (val.isEmpty()){
-            signupEmail.setError("Email cannot be empty");
-            return false;
-        } else {
-            signupEmail.setError(null);
 
-            return true;
+    private void attemptSignup() {
+        String name = signupName.getText().toString();
+        String email = signupEmail.getText().toString();
+        String username = signupUsername.getText().toString();
+        String password = signupPassword.getText().toString();
+        String country = signupCountry.getText().toString();
+        String city = cityAutoCompleteTextView.getText().toString();
+        String phone = signupPhone.getText().toString();
+
+        // Placeholder URLs for profile and cover photos (replace with actual URLs)
+        String profilePhotoUrl = "https://example.com/profile.jpg";
+        String coverPhotoUrl = "https://example.com/cover.jpg";
+
+        if (validateInputs(name, email, username, password, country, city, phone)) {
+            // Pass profile and cover photo URLs to registerUser method
+            registerUser(name, email, username, password, country, city, phone, profilePhotoUrl, coverPhotoUrl);
         }
     }
 
+    private boolean validateInputs(String... inputs) {
+        // Add your validation logic here
+        // Return false if any input is invalid
+        return true;
+    }
+
+    private void registerUser(String name, String email, String username, String password, String country, String city, String phone, String profilePhotoUrl, String coverPhotoUrl) {
+        // Prepare data for sending
+        HashMap<String, String> postDataParams = new HashMap<>();
+        postDataParams.put("name", name);
+        postDataParams.put("email", email);
+        postDataParams.put("username", username);
+        postDataParams.put("password", password);
+        postDataParams.put("country", country);
+        postDataParams.put("city", city);
+        postDataParams.put("phone", phone);
+        postDataParams.put("profile_photo_url", profilePhotoUrl); // Include profile photo URL
+        postDataParams.put("cover_photo_url", coverPhotoUrl); // Include cover photo URL
+
+        // Send data to server
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //URL url = new URL("http://192.168.18.114/Ass02API/register.php"); // Use your IP and path
+                    URL url = new URL(Config.API_BASE_URL + "register.php");
+
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setDoOutput(true);
+
+                    OutputStream os = conn.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(getPostDataString(postDataParams));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    int responseCode = conn.getResponseCode();
+                    Log.d("SignupActivity", "Response Code: " + responseCode);
+
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        StringBuffer sb = new StringBuffer("");
+                        String line;
+
+                        while ((line = in.readLine()) != null) {
+                            sb.append(line);
+                            break;
+                        }
+
+                        in.close();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignupActivity.this, sb.toString(), Toast.LENGTH_LONG).show();
+                                if (sb.toString().contains("successfully")) {
+                                    navigateToLogin();
+                                }
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SignupActivity.this, "Failed to register", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d("SignupActivity", "Exception: " + e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    private String getPostDataString(HashMap<String, String> params) throws Exception {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (first)
+                first = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+        }
+
+        return result.toString();
+    }
+
+    private void navigateToLogin() {
+        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+
+
+    private void checkInternetConnection() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        View indicator = findViewById(R.id.internet_status_indicator);
+        if (isConnected) {
+            indicator.setBackgroundResource(R.drawable.indicator_connected);
+        } else {
+            indicator.setBackgroundResource(R.drawable.indicator_disconnected);
+        }
+    }
 }

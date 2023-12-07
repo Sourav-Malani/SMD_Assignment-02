@@ -1,6 +1,5 @@
 package com.ass2.i190434_190528.Helper;
 
-import com.ass2.i190434_190528.Helper.HelperClass;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,23 +14,6 @@ public class UserDatabaseHelper {
         // Initialize the database reference
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference("users");
-    }
-
-    // Getter and Setter functions for user data
-    // You can add more fields as per your database structure
-    public void setUserName(String email, String userName) {
-        String safeUserEmail = emailToSafeKey(email);
-        databaseReference.child(safeUserEmail).child("username").setValue(userName);
-    }
-
-    public void setCity(String email, String city) {
-        String safeUserEmail = emailToSafeKey(email);
-        databaseReference.child(safeUserEmail).child("city").setValue(city);
-    }
-
-    public void setCountry(String email, String country) {
-        String safeUserEmail = emailToSafeKey(email);
-        databaseReference.child(safeUserEmail).child("country").setValue(country);
     }
 
     // Define a callback interface to get the user data

@@ -217,6 +217,16 @@
         android:clickable="true"
         android:onClick="onLoginClicked"
         />
+    <!-- Add this inside your RelativeLayout or LinearLayout in activity_signup.xml -->
+    <View
+        android:id="@+id/internet_status_indicator"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/indicator_background" />
 
 
 </LinearLayout>

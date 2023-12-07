@@ -1,6 +1,5 @@
 package com.ass2.i190434_190528;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -12,18 +11,20 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.ass2.i190434_190528.config.Config;
+
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -31,26 +32,16 @@ public class LoginActivity extends AppCompatActivity {
     private EditText loginPassword;
     private Button loginButton;
     private TextView signupRedirectText;
-    private FirebaseAuth mAuth;
-    String passwordFromDB, nameFromDB, cityFromDB, countryFromDB, emailFromDB, phoneFromDB, coverphotoURLFromDB, profilephotoURLFromDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mAuth = FirebaseAuth.getInstance();
 
         loginEmail = findViewById(R.id.User_Email);
         loginPassword = findViewById(R.id.User_Password);
         signupRedirectText = findViewById(R.id.txt_signUp);
         loginButton = findViewById(R.id.btn_signIn);
-
-        // Check if the user is already logged in
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            navigateToHome();
-            finish();
-        }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +56,6 @@ public class LoginActivity extends AppCompatActivity {
                 navigateToSignup();
             }
         });
-
     }
 
     private void loginUser() {
@@ -73,23 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         final String password = loginPassword.getText().toString();
 
         if (validateEmail() && validatePassword()) {
-            mAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                checkUser(email, password);
-                            } else {
-                                displayError("Authentication failed.");
-                            }
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            displayError("Authentication failed.");
-                        }
-                    });
+            attemptLogin(email, password);
         } else {
             displayError("Please enter valid credentials.");
         }
@@ -98,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
     private boolean validateEmail() {
         String val = loginEmail.getText().toString();
         if (val.isEmpty()) {
-            loginEmail.setError("Username or Email cannot be empty");
+            loginEmail.setError("Email cannot be empty");
             return false;
         } else {
             loginEmail.setError(null);
@@ -117,108 +91,133 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void checkUser(final String email, final String password) {
-        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        final String safeUserEmail = emailToSafeKey(email);
+    private void attemptLogin(String email, String password) {
+        // Prepare data for sending
+        HashMap<String, String> postDataParams = new HashMap<>();
+        postDataParams.put("email", email);
+        postDataParams.put("password", password);
 
-        Query checkUserDatabase = reference.orderByChild("email").equalTo(email);
-
-        checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        // Send data to server
+        new Thread(new Runnable() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    passwordFromDB = snapshot.child(safeUserEmail).child("password").getValue(String.class);
-                    if (passwordFromDB.equals(password)) {
-                        // Data retrieval and shared preference updates
-                        getDataFromDBAndSetPreferences();
+            public void run() {
+                try {
+                    //URL url = new URL("http://192.168.18.114/Ass02API/login.php"); // Use your IP and path
+                    URL url = new URL(Config.API_BASE_URL + "login.php");
+
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setDoOutput(true);
+
+                    OutputStream os = conn.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write(getPostDataString(postDataParams));
+                    writer.flush();
+                    writer.close();
+                    os.close();
+
+                    int responseCode = conn.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        StringBuffer sb = new StringBuffer("");
+                        String line;
+
+                        while ((line = in.readLine()) != null) {
+                            sb.append(line);
+                            break;
+                        }
+
+                        in.close();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                handleLoginResponse(sb.toString());
+                            }
+                        });
                     } else {
-                        displayError("Invalid Credentials");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                displayError("Login failed");
+                            }
+                        });
                     }
-                } else {
-                    displayError("User does not exist");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                displayError("Database error");
-            }
-        });
+        }).start();
     }
 
-    private void getDataFromDBAndSetPreferences() {
-        getDataFromDB(new DataCallback() {
-            @Override
-            public void onDataReceived() {
-                setSharedPreference();
+    private void handleLoginResponse(String response) {
+        try {
+            JSONObject jsonResponse = new JSONObject(response);
+            String status = jsonResponse.getString("status");
+            if ("success".equals(status)) {
+                // Store user data in SharedPreferences
+                setSharedPreference(jsonResponse);
                 navigateToHome();
-            }
-        });
-    }
-
-    private interface DataCallback {
-        void onDataReceived();
-    }
-
-    private void getDataFromDB(final DataCallback callback) {
-        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        final String safeUserEmail = emailToSafeKey(loginEmail.getText().toString());
-
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    DataSnapshot userSnapshot = snapshot.child(safeUserEmail);
-                    nameFromDB = userSnapshot.child("name").getValue(String.class);
-                    cityFromDB = userSnapshot.child("city").getValue(String.class);
-                    countryFromDB = userSnapshot.child("country").getValue(String.class);
-                    emailFromDB = userSnapshot.child("email").getValue(String.class);
-                    phoneFromDB = userSnapshot.child("phone").getValue(String.class);
-                    coverphotoURLFromDB = userSnapshot.child("coverPhotoUrl").getValue(String.class);
-                    profilephotoURLFromDB = userSnapshot.child("profilePhotoUrl").getValue(String.class);
-                }
-
-                callback.onDataReceived();
+            } else {
+                String message = jsonResponse.getString("message");
+                displayError(message);
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                displayError("Database error");
-            }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+            displayError("Error parsing response");
+        }
     }
 
-    private String emailToSafeKey(String email) {
-        return email.replace(".", "_").replace("@", "_");
-    }
-
-    private void setSharedPreference() {
+    private void setSharedPreference(JSONObject userData) {
         SharedPreferences sharedPrefs = getSharedPreferences("userPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPrefs.edit();
-        FirebaseUser user = mAuth.getCurrentUser();
-        String userId = user.getUid();
-        editor.putBoolean("isLogged", true);
-        editor.putString("userID", userId);
-        editor.putString("name", nameFromDB);
-        editor.putString("city", cityFromDB);
-        editor.putString("country", countryFromDB);
-        editor.putString("email", emailFromDB);
-        editor.putString("phone", phoneFromDB);
-        editor.putString("coverPhotoUrl", coverphotoURLFromDB);
-        editor.putString("profilePhotoUrl", profilephotoURLFromDB);
-        editor.apply();
+        try {
+            editor.putBoolean("isLogged", true);
+            editor.putString("name", userData.getString("name"));
+            editor.putString("city", userData.getString("city"));
+            editor.putString("country", userData.getString("country"));
+            editor.putString("email", userData.getString("email"));
+            editor.putString("phone", userData.getString("phone"));
+
+            // Add other user data as needed
+            // Store profile and cover photo URLs if available
+            if (userData.has("profile_photo_url")) {
+                editor.putString("profile_photo_url", userData.getString("profile_photo_url"));
+            }
+            if (userData.has("cover_photo_url")) {
+                editor.putString("cover_photo_url", userData.getString("cover_photo_url"));
+            }
+
+            editor.apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private String errorMessage;
-    private void displayError(String message) {
-        // Display a Toast (in your actual app)
-        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+    private String getPostDataString(HashMap<String, String> params) throws Exception {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
 
-        // Store the error message for testing purposes
-        errorMessage = message;
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (first)
+                first = false;
+            else
+                result.append("&");
+
+            result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+        }
+
+        return result.toString();
+    }
+
+    private void displayError(String message) {
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void navigateToHome() {
+        // Navigate to the Home activity
         Intent intent = new Intent(LoginActivity.this, bottomnavigation.class);
         startActivity(intent);
         finish();
